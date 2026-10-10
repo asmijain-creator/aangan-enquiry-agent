@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Aangan Enquiry Agent</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Instrument+Sans:wght@400;500;600&display=swap">
+<style>
+:root{--bg:#f5f6f3;--card:#fff;--fg:#1c2421;--muted:#5f6b67;--line:#e2e6e3;--accent:#1f7a64;--ok:#1f7a64;--bad:#c2413a}
+@media (prefers-color-scheme:dark){:root{--bg:#111614;--card:#1a211e;--fg:#e4ebe8;--muted:#9aa8a3;--line:#2b3431;--accent:#4fbf9f;--ok:#4fbf9f;--bad:#ef7b72}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 "Instrument Sans",system-ui,sans-serif}
+.wrap{max-width:900px;margin:0 auto;padding:40px 16px 56px;display:flex;flex-direction:column;gap:28px}
+.eyebrow{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);font-weight:600}
+h1{font:700 clamp(28px,4.5vw,42px)/1.1 "Bricolage Grotesque",system-ui,sans-serif;margin:6px 0 10px;text-wrap:balance}
+h2{font:700 20px/1.2 "Bricolage Grotesque",system-ui,sans-serif;margin:0 0 10px}
+p{margin:0;max-width:68ch}.muted{color:var(--muted)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px 22px}
+ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px}
+.status{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-top:12px}
+.s{border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:14px}
+.s b{display:block;font-size:15px}.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--muted);margin-right:6px}
+.ok .dot{background:var(--ok)}.bad .dot{background:var(--bad)}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.facts div{border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.facts strong{display:block;font:700 24px/1.1 "Bricolage Grotesque",system-ui,sans-serif;font-variant-numeric:tabular-nums}
+a{color:var(--accent)}
+code{font-size:14px;background:color-mix(in srgb,var(--accent) 10%,transparent);padding:1px 6px;border-radius:5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">MESA · AI and its Application · Case 03</div>
+    <h1>Every phone enquiry to Aangan Studio answered in seconds, day or night</h1>
+    <p class="muted">An AI voice agent answers Aangan Studio's calls, qualifies the enquiry against Nikhil's five tests, and hands qualified leads to a designer on Telegram with everything already asked. HubSpot tracks every lead, and a dashboard shows Nikhil what the system produces and what it costs.</p>
+  </header>
+
+  <section class="card">
+    <h2>Live system status</h2>
+    <p class="muted">Checked live when this page loads. No keys are shown.</p>
+    <div class="status" id="status">
+      <div class="s"><b>Vaani voice agent</b><span class="dot"></span>checking…</div>
+      <div class="s"><b>Gemini (handoff notes)</b><span class="dot"></span>checking…</div>
+      <div class="s"><b>HubSpot CRM</b><span class="dot"></span>checking…</div>
+      <div class="s"><b>Telegram bot</b><span class="dot"></span>checking…</div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>What happens on every call</h2>
+    <ol>
+      <li><strong>Vaani answers</strong> and asks the qualifying questions one at a time, in English or Hinglish. It never quotes a price.</li>
+      <li>When the call ends, Vaani sends the transcript and 15 extracted fields (including a verdict) to <code>/api/vaani-webhook</code>.</li>
+      <li><strong>Gemini writes a 20-second handoff note</strong> for the designer: who, project, timeline, decision-maker, the caller's own words, open questions.</li>
+      <li><strong>HubSpot</strong> gets a contact and a deal in the "Aangan Enquiries" pipeline, with every field and the note.</li>
+      <li><strong>Telegram</strong> posts the lead to the designers' group with <em>Claim</em>, <em>Consultation booked</em> and <em>Not a fit</em> buttons. Every tap updates HubSpot.</li>
+      <li><strong>Nikhil's dashboard</strong> (private link) shows calls, qualified leads, bookings, wins and the cost per lead.</li>
+    </ol>
+  </section>
+
+  <section class="facts">
+    <div><strong>&lt; 5 s</strong>time to answer, 24×7</div>
+    <div><strong>₹8 / min</strong>measured call cost</div>
+    <div><strong>≈ ₹5k</strong>a month for 200 calls</div>
+    <div><strong>0</strong>prices quoted by the AI</div>
+  </section>
+
+  <section class="card">
+    <h2>Built with</h2>
+    <p>Vaani (voice agent) · Google Gemini (handoff notes) · HubSpot (CRM) · Telegram Bot API (designer alerts) · Node.js serverless functions on Vercel · deployed from GitHub.</p>
+  </section>
+</div>
+<script>
+fetch("/api/health").then(r => r.json()).then(j => {
+  const map = [["vaani","Vaani voice agent"],["gemini","Gemini (handoff notes)"],["hubspot","HubSpot CRM"],["telegram","Telegram bot"]];
+  document.getElementById("status").innerHTML = map.map(([k, label]) => {
+    const c = j.connections[k];
+    return `<div class="s ${c.ok ? "ok" : "bad"}"><b>${label}</b><span class="dot"></span>${c.ok ? "Connected" : "Not connected"}${c.ok && c.detail ? " · " + String(c.detail).replace(/[<>&]/g, "") : ""}</div>`;
+  }).join("");
+}).catch(() => {
+  document.getElementById("status").insertAdjacentHTML("beforeend", "<p class='muted'>Status check unavailable right now.</p>");
+});
+</script>
+</body>
+</html>
