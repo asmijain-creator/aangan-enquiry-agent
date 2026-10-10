@@ -149,7 +149,6 @@ details summary{cursor:pointer;font-weight:700;margin-bottom:8px}
     <div class="navgroup">
       <h4>Explain</h4>
       <button class="nav" data-view="rules"><span class="ic">⚖</span>Rules</button>
-      <button class="nav" data-view="how"><span class="ic">▶</span>How it works</button>
     </div>
     <div class="promo">
       <b>Why can't it quote prices?</b>
@@ -337,20 +336,7 @@ function rules() {
   </div>`;
 }
 
-function how() {
-  const steps = [["Vaani answers", "In seconds, 24×7. Asks one question at a time in English or Hinglish; never quotes a price."],
-    ["Vaani extracts", "15 fields and a verdict from the call, using Nikhil's five tests."],
-    ["Gemini writes the note", "A 20-second handoff: who, project, timeline, decision, their words, open questions."],
-    ["HubSpot records it", "A contact and a deal in the “Aangan Enquiries” pipeline, with every field."],
-    ["Telegram alerts designers", "In the “Aangan Leads” group, with Claim, Consultation booked and Not a fit buttons."],
-    ["Nikhil sees it here", "Calls, outcomes, handoff time and the cost per qualified lead, with no manual counting."]];
-  return `<div class="card"><h3>How a call becomes a booked consultation</h3><div class="sub">Phone channel only; WhatsApp and the web form would plug in at step 2</div>
-    <div class="steps" style="margin-top:14px">${steps.map(([b, p], i) => `<div class="step"><span class="mono" style="color:var(--blue2)">0${i + 1}</span><b>${b}</b><p>${p}</p></div>`).join("")}</div></div>
-    <div class="card"><h3>Components map</h3><div class="sub">Trigger → Input → Context → Processing → AI → Output</div><img class="mapimg" src="/components-map.png" alt="Components map of the Aangan enquiry system" style="margin-top:14px"></div>
-    <div class="card"><h3>Proof it's running</h3><p class="muted" style="margin:6px 0 0">Live status: <a href="/api/health" target="_blank" rel="noopener">/api/health</a> · Code: <a href="https://github.com/asmijain-creator/aangan-enquiry-agent" target="_blank" rel="noopener">GitHub</a> · Built with Vaani, Gemini, HubSpot, Telegram and Vercel.</p></div>`;
-}
-
-const VIEWS = { overview: ["Overview", overview], board: ["Leads board", board], calls: ["Calls", callsView], rules: ["Rules", rules], how: ["How it works", how] };
+const VIEWS = { overview: ["Overview", overview], board: ["Leads board", board], calls: ["Calls", callsView], rules: ["Rules", rules] };
 async function render() {
   await load(state.mode); if (state.view === "rules") await load("replay");
   const [title, fn] = VIEWS[state.view];
