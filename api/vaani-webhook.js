@@ -1,7 +1,7 @@
 // Vaani → this endpoint after every call.
 // On "call_postprocessing": write the handoff note, create the HubSpot deal, alert designers on Telegram.
 import { config } from "../lib/config.js";
-import { findCall, normaliseEntities } from "../lib/vaani.js";
+import { findCall, callDetails, normaliseEntities } from "../lib/vaani.js";
 import { writeHandoffNote } from "../lib/gemini.js";
 import { upsertContact, createDeal, findDealByCallId, addNote, dealUrl } from "../lib/hubspot.js";
 import { sendMessage, esc } from "../lib/telegram.js";
@@ -44,7 +44,18 @@ export async function processCall(body) {
     (lead.phone_number && /\d{8,}/.test(lead.phone_number.replace(/\D/g, "")) && lead.phone_number) ||
     (history && (history.direction === "Outbound" ? history.to_number : history.from_number)) ||
     null;
-  const durationSec = Math.round((data.call_duration || history?.duration_ms || 0) / 1000);
+  console.log("call_postprocessing payload keys:", Object.keys(body), Object.keys(data));
+  let durationMs = Number(data.call_duration || data.duration_ms || body.call_duration || history?.duration_ms || 0);
+  if (!durationMs) {
+    // Live payloads have arrived without call_duration; Vaani's call details carry the call's speech length.
+    try {
+      const details = await callDetails(callId);
+      durationMs = Number(details?.percentile_statistics?.usage?.stt?.total_speech_duration_ms || 0);
+    } catch (err) {
+      console.warn("Vaani call details lookup failed:", err.message);
+    }
+  }
+  const durationSec = Math.round(durationMs / 1000);
   const costEstimated = history?.call_cost == null;
   const cost = costEstimated ? (durationSec / 60) * config.vaaniCostPerMin : Number(history.call_cost);
 
