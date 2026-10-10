@@ -1,0 +1,193 @@
+<title>Aangan Enquiry Line Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Instrument+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: one swimlane per actor, Trigger→Output across; short boxes, dashed arrows; three notes below */
+:root{
+  --bg:#f6f7f5; --surface:#ffffff; --fg:#1d2422; --muted:#5e6a66; --line:#e1e6e3;
+  --head:#1f2d40; --head-fg:#eef2f7; --arrow:#3b4656; --dot:#2f9a80;
+  --r1:#eaf0fb; --b1:#5b6fd1;
+  --r2:#fdf6e3; --b2:#c9952a;
+  --r3:#fcebf1; --b3:#d0507a;
+  --r4:#e9f6ec; --b4:#3f9a57;
+  --r5:#e6f4f4; --b5:#2b8f8f;
+  --r6:#e9f1fb; --b6:#3a83c9;
+  --r7:#f1ecfa; --b7:#7c5cc4;
+  --r8:#fdeeea; --b8:#d0623f;
+  --f-display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --f-body:"Instrument Sans","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11161c; --surface:#1a2129; --fg:#e4e9ee; --muted:#9aa6b2; --line:#2a333d;
+  --head:#0b1018; --head-fg:#e4e9ee; --arrow:#aeb9c6; --dot:#4fbf9f;
+  --r1:#18213a; --b1:#8496e8; --r2:#2c2614; --b2:#e0b04d; --r3:#2f1820; --b3:#e87ea0;
+  --r4:#16271b; --b4:#6cc283; --r5:#132a2a; --b5:#5cc0c0; --r6:#15233a; --b6:#6ea9e3;
+  --r7:#221a33; --b7:#a68ae6; --r8:#301c16; --b8:#e8896a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#11161c; --surface:#1a2129; --fg:#e4e9ee; --muted:#9aa6b2; --line:#2a333d;
+  --head:#0b1018; --head-fg:#e4e9ee; --arrow:#aeb9c6; --dot:#4fbf9f;
+  --r1:#18213a; --b1:#8496e8; --r2:#2c2614; --b2:#e0b04d; --r3:#2f1820; --b3:#e87ea0;
+  --r4:#16271b; --b4:#6cc283; --r5:#132a2a; --b5:#5cc0c0; --r6:#15233a; --b6:#6ea9e3;
+  --r7:#221a33; --b7:#a68ae6; --r8:#301c16; --b8:#e8896a; color-scheme:dark}
+
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.45}
+.wrap{max-width:1400px;margin:0 auto;padding-inline:20px;padding-block:28px 44px;display:flex;flex-direction:column;gap:22px}
+header{text-align:center;display:flex;flex-direction:column;gap:4px}
+h1{font-family:var(--f-display);font-weight:700;font-size:clamp(22px,3vw,30px);margin:0;text-wrap:balance}
+.sub{color:var(--muted);margin:0}
+
+.scroll{overflow-x:auto;border-radius:10px}
+.map{position:relative;display:grid;grid-template-columns:150px repeat(6,minmax(165px,1fr));min-width:1150px;background:var(--surface)}
+.arrows{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:2}
+.arrows path.e{fill:none;stroke:var(--arrow);stroke-width:1.5;stroke-dasharray:5 4}
+.arrows .tip{fill:var(--arrow)}
+.arrows .dot{fill:var(--dot)}
+.map > div{padding:12px;min-width:0;display:flex;align-items:center;justify-content:center;border-right:1px solid var(--line)}
+.hd{background:var(--head);color:var(--head-fg);font-family:var(--f-display);font-weight:600;font-size:16px;padding-block:14px!important;border-right:0!important}
+.actor{background:var(--head);color:var(--head-fg);flex-direction:column;gap:2px;text-align:center;border-right:0!important;border-top:1px solid color-mix(in srgb,var(--head-fg) 12%,transparent)}
+.actor b{font-family:var(--f-display);font-weight:700;font-size:16px}
+.actor span{font-size:12.5px;opacity:.75}
+.map > div.c{min-height:118px}
+
+.box{background:var(--surface);border:2px solid;border-radius:9px;padding:9px 10px;font-size:13.5px;line-height:1.38;text-align:center;width:100%}
+.l1{background:var(--r1)} .l1 .box{border-color:var(--b1)}
+.l2{background:var(--r2)} .l2 .box{border-color:var(--b2)}
+.l3{background:var(--r3)} .l3 .box{border-color:var(--b3)}
+.l4{background:var(--r4)} .l4 .box{border-color:var(--b4)}
+.l5{background:var(--r5)} .l5 .box{border-color:var(--b5)}
+.l6{background:var(--r6)} .l6 .box{border-color:var(--b6)}
+.l7{background:var(--r7)} .l7 .box{border-color:var(--b7)}
+.l8{background:var(--r8)} .l8 .box{border-color:var(--b8)}
+
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.note{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+.note h2{font-family:var(--f-display);font-weight:700;font-size:16px;margin:0}
+.note p{margin:0;font-size:14px;color:var(--muted)}
+.foot{font-size:13.5px;color:var(--muted);text-align:center;margin:0}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Case 3 · Unanswered Enquiries — Components Map</h1>
+    <p class="sub">Aangan Studio · phone channel only</p>
+  </header>
+
+  <div class="scroll" role="region" aria-label="Components map" tabindex="0">
+    <div class="map">
+      <svg class="arrows" id="arrows" aria-hidden="true"></svg>
+      <div class="hd">Actor</div><div class="hd">Trigger</div><div class="hd">Input</div><div class="hd">Context</div><div class="hd">Processing</div><div class="hd">AI</div><div class="hd">Output</div>
+
+      <div class="actor"><b>Caller</b><span>Client</span></div>
+      <div class="c l1"><div class="box" id="callT">Calls the studio number, any time, day or night</div></div>
+      <div class="c l1"><div class="box" id="callI">Says what they need: space, area, location, scope, timeline</div></div>
+      <div class="c l1"></div><div class="c l1"></div><div class="c l1"></div>
+      <div class="c l1"><div class="box" id="callO">Hears &ldquo;a designer will call to confirm&rdquo;, then gets that call with full context</div></div>
+
+      <div class="actor"><b>Voice Agent</b><span>Vaani</span></div>
+      <div class="c l2"></div>
+      <div class="c l2"><div class="box" id="voiceI">Picks up when the front desk can’t; turns speech into text and speaks replies</div></div>
+      <div class="c l2"></div><div class="c l2"></div><div class="c l2"></div><div class="c l2"></div>
+
+      <div class="actor"><b>AI Model</b><span>Vaani LLM + Gemini</span></div>
+      <div class="c l3"></div>
+      <div class="c l3"><div class="box" id="llmI">Understands each answer live and picks the next question</div></div>
+      <div class="c l3"></div>
+      <div class="c l3"><div class="box" id="llmP">After the call: Vaani extracts 15 fields and a verdict using qualified.md</div></div>
+      <div class="c l3"><div class="box" id="llmA">Gemini writes the designer handoff note; never quotes a price</div></div>
+      <div class="c l3"></div>
+
+      <div class="actor"><b>CRM</b><span>HubSpot</span></div>
+      <div class="c l4"></div><div class="c l4"></div>
+      <div class="c l4"><div class="box" id="dbC">services.md, qualified.md, pricing rule (in the agent prompt) + past callers in HubSpot</div></div>
+      <div class="c l4"></div><div class="c l4"></div>
+      <div class="c l4"><div class="box" id="dbO">Contact + deal in &ldquo;Aangan Enquiries&rdquo;: all fields, handoff note, call cost</div></div>
+
+      <div class="actor"><b>Automation</b><span>App on Vercel</span></div>
+      <div class="c l5"></div><div class="c l5"></div><div class="c l5"></div>
+      <div class="c l5"><div class="box" id="autoP">Call ends → Vaani webhook sends transcript + fields to the app</div></div>
+      <div class="c l5"></div>
+      <div class="c l5"><div class="box" id="autoO">Routes: qualified → designers, unsure / urgent → team, not a fit → closed in HubSpot</div></div>
+
+      <div class="actor"><b>Telegram</b><span>Bot</span></div>
+      <div class="c l6"></div><div class="c l6"></div><div class="c l6"></div><div class="c l6"></div><div class="c l6"></div>
+      <div class="c l6"><div class="box" id="tgO">Posts the handoff note to &ldquo;Aangan Leads&rdquo; with Claim / Booked / Not a fit buttons</div></div>
+
+      <div class="actor"><b>Studio Team</b><span>Designers, front desk</span></div>
+      <div class="c l7"></div><div class="c l7"></div><div class="c l7"></div><div class="c l7"></div><div class="c l7"></div>
+      <div class="c l7"><div class="box" id="teamO">Designer claims and calls with full context; front desk handles unsure leads</div></div>
+
+      <div class="actor"><b>Nikhil</b><span>Dashboard</span></div>
+      <div class="c l8"></div><div class="c l8"></div><div class="c l8"></div><div class="c l8"></div><div class="c l8"></div>
+      <div class="c l8"><div class="box" id="dashO">Live dashboard: calls, qualified leads, bookings, wins, ₹ per call and per lead</div></div>
+    </div>
+  </div>
+
+  <div class="notes">
+    <div class="note"><h2>The cut: no price quotes</h2><p>pricing.md says “indicative only, varies by site”, so the AI collects area and scope and the designer gives the estimate.</p></div>
+    <div class="note"><h2>Why Telegram</h2><p>Instant on the designer’s phone, a Claim button so no lead is missed or doubled, and every tap feeds the dashboard.</p></div>
+    <div class="note"><h2>Running cost</h2><p>Measured ₹17 for a 2-minute call (≈₹8/min): about ₹5k a month for 200 calls. Gemini ≈ ₹0.05 a note; HubSpot, Telegram and Vercel are free.</p></div>
+  </div>
+  <p class="foot">Not built now: WhatsApp and the web form plug in at the same Input step, and everything after stays the same. A Telegram recap to callers was dropped because a bot can&rsquo;t message a phone number first.</p>
+</div>
+
+<script>
+(function(){
+  // m: v = straight vertical, h = straight horizontal, g = routed through cell gutters
+  const EDGES = [
+    {f:"callT", t:"callI", m:"h"},
+    {f:"callI", t:"voiceI", m:"v"},
+    {f:"voiceI", t:"llmI", m:"v", both:true},
+    {f:"dbC", t:"llmI", m:"g"},
+    {f:"voiceI", t:"autoP", m:"g", ty:.5, off:-9},
+    {f:"dbC", t:"llmP", m:"g"},
+    {f:"autoP", t:"llmP", m:"v"},
+    {f:"llmP", t:"llmA", m:"h"},
+    {f:"llmA", t:"autoO", m:"g"},
+    {f:"autoO", t:"dbO", m:"v"},
+    {f:"autoO", t:"tgO", m:"v"},
+    {f:"teamO", t:"callO", m:"g"},
+    {f:"tgO", t:"teamO", m:"v"},
+    {f:"dbO", t:"dashO", m:"g", side:"left", off:-9}
+  ];
+  const svg = document.getElementById("arrows"), map = svg.parentElement, NS = "http://www.w3.org/2000/svg";
+  function rect(el, b){ const r = el.getBoundingClientRect();
+    return {l:r.left-b.left, r:r.right-b.left, t:r.top-b.top, b:r.bottom-b.top, h:r.height}; }
+  function route(e, b){
+    const se = document.getElementById(e.f), te = document.getElementById(e.t);
+    const s = rect(se,b), t = rect(te,b), sc = rect(se.parentElement,b), tc = rect(te.parentElement,b);
+    const sy = s.t + s.h*(e.sy ?? .5), ty = t.t + t.h*(e.ty ?? .5), off = e.off || 0;
+    if(e.m === "v"){ const x = (Math.max(s.l,t.l)+Math.min(s.r,t.r))/2;
+      return t.t > s.b ? [[x,s.b],[x,t.t]] : [[x,s.t],[x,t.b]]; }
+    if(e.m === "h"){ const y = (Math.max(s.t,t.t)+Math.min(s.b,t.b))/2;
+      return t.l > s.r ? [[s.r,y],[t.l,y]] : [[s.l,y],[t.r,y]]; }
+    if(Math.abs(sc.l-tc.l) < 2){
+      if(e.side === "left"){ const gx = sc.l+5+off; return [[s.l,sy],[gx,sy],[gx,ty],[t.l,ty]]; }
+      const gx = sc.r-5+off; return [[s.r,sy],[gx,sy],[gx,ty],[t.r,ty]]; }
+    if(t.l > s.r){ const gx = tc.l+5+off; return [[s.r,sy],[gx,sy],[gx,ty],[t.l,ty]]; }
+    const gx = tc.r-5+off; return [[s.l,sy],[gx,sy],[gx,ty],[t.r,ty]];
+  }
+  function draw(){
+    const b = map.getBoundingClientRect();
+    svg.setAttribute("viewBox", `0 0 ${b.width} ${b.height}`);
+    svg.innerHTML = '<defs><marker id="tip" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="tip" d="M0,0L10,5L0,10z"/></marker></defs>';
+    for(const e of EDGES){
+      const pts = route(e, b);
+      const p = document.createElementNS(NS, "path");
+      p.setAttribute("class", "e");
+      p.setAttribute("d", "M" + pts.map(q => q[0].toFixed(1)+","+q[1].toFixed(1)).join("L"));
+      p.setAttribute("marker-end", "url(#tip)");
+      if(e.both) p.setAttribute("marker-start", "url(#tip)");
+      svg.appendChild(p);
+      if(e.both) continue;
+      const c = document.createElementNS(NS, "circle");
+      c.setAttribute("class", "dot"); c.setAttribute("cx", pts[0][0]); c.setAttribute("cy", pts[0][1]); c.setAttribute("r", 3.5);
+      svg.appendChild(c);
+    }
+  }
+  let raf = 0; const schedule = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(draw); };
+  new ResizeObserver(schedule).observe(map);
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(schedule);
+  window.addEventListener("load", schedule);
+  schedule();
+})();
+</script>
