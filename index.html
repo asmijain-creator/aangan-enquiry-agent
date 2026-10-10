@@ -39,7 +39,7 @@ button{font:inherit;color:inherit}
 .promo button{width:100%;padding:9px;border-radius:10px;border:0;background:#0d0a26;font-weight:700;cursor:pointer}
 /* main */
 main{min-width:0;display:flex;flex-direction:column;gap:18px}
-.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;position:sticky;top:0;z-index:5;background:var(--bg);padding:6px 0}
 .crumb{margin-right:auto}.crumb small{color:var(--muted);font-size:13px}.crumb h1{margin:0;font-size:18px;font-weight:700}
 .search{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line2);border-radius:12px;padding:8px 12px;min-width:220px}
 .search input{background:none;border:0;outline:0;color:var(--fg);font:inherit;width:100%}
@@ -192,7 +192,7 @@ const median = (a) => { const b = a.filter((x) => x > 0).sort((x, y) => x - y); 
 const initials = (n) => String(n || "?").split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase();
 const vOf = (c) => (V[c.verdict] ? c.verdict : "unsure");
 const nameOf = (c) => c.caller || `Caller ${c.id}`;
-const when = (c) => { const d = new Date(c.date + "T00:00:00"); return `${d.getDate()} ${d.toLocaleString("en-IN", { month: "short" })}${c.time ? ", " + c.time : ""}`; };
+const when = (c) => { const d = new Date(c.date + "T00:00:00Z"); return `${d.getUTCDate()} ${d.toLocaleString("en-IN", { month: "short", timeZone: "UTC" })}${c.time ? ", " + c.time : ""}`; };
 
 async function load(mode) {
   if (state.data[mode]) return state.data[mode];
@@ -253,10 +253,11 @@ function donut(s) {
 
 function perDay(list) {
   if (!list.length) return `<div class="empty">No calls yet.</div>`;
+  // Work in UTC so date strings never shift with the viewer's timezone.
   const dates = list.map((c) => c.date).sort();
-  const start = new Date(dates[0] + "T00:00:00"), end = new Date(dates[dates.length - 1] + "T00:00:00");
-  if (state.mode === "replay") { start.setDate(1); end.setDate(30); }
-  const days = []; for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) days.push(d.toISOString().slice(0, 10));
+  const start = new Date(dates[0] + "T00:00:00Z"), end = new Date(dates[dates.length - 1] + "T00:00:00Z");
+  if (state.mode === "replay") { start.setUTCDate(1); end.setUTCDate(30); }
+  const days = []; for (let d = new Date(start); d <= end; d.setUTCDate(d.getUTCDate() + 1)) days.push(d.toISOString().slice(0, 10));
   const max = Math.max(1, ...days.map((d) => list.filter((c) => c.date === d).length));
   const W = 640, H = 170, pad = 24, bw = Math.max(4, (W - pad * 2) / days.length - 4);
   const bars = days.map((d, i) => {
@@ -287,7 +288,7 @@ function overview() {
       <button class="link" data-view="board">Open the leads board →</button></div>
     <div class="card"><h3>Answered within 5 minutes</h3><div class="sub">Nikhil's target, on every call</div>
       <div class="gauge">${gauge(s.total ? 1 : 0)}
-        <div class="compare"><span>Sept,<br>manual</span><b>${s.total ? "100%" : "–"}<small style="display:block;font-size:12px;color:var(--muted);font-weight:500">AI picks up, any hour</small></b><span style="text-align:right">~48% unanswered in 48 h before</span></div></div></div>
+        <div class="compare"><span>With<br>Aangan Desk</span><b>${s.total ? "100%" : "–"}<small style="display:block;font-size:12px;color:var(--muted);font-weight:500">AI picks up, any hour</small></b><span style="text-align:right">Before (manual):<br>~48% got no reply in 48 h</span></div></div></div>
     <div class="card"><h3>Outcome mix</h3><div class="sub">Decided by Nikhil's five tests; people make the final call</div>
       <div class="mix"><div>${["unsure", "not_a_fit", "urgent_existing_client"].map((k) => `<div class="tile"><span><i class="dot" style="background:${V[k].color}"></i>${V[k].label}</span><b>${s.by[k].length}</b></div>`).join("")}</div>${donut(s)}</div></div>
   </div>
