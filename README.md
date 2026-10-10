@@ -16,6 +16,13 @@ Designer taps a button ─► /api/telegram-webhook ─► HubSpot stage + note
 Nikhil ─► /api/dashboard?key=… ─► Vaani call history + HubSpot deals
 ```
 
+## Where it runs
+
+- **Live app:** https://aangan-enquiry-agent-brown.vercel.app (Vercel project `aangan-enquiry-agent`)
+- **Code:** https://github.com/asmijain-creator/aangan-enquiry-agent. Every push to `main` deploys automatically.
+- **Keys:** stored in Vercel → Settings → Environment Variables, and locally in `.env`. Neither is in git.
+- **Vaani webhook and dashboard links:** run `node scripts/make-links.mjs` to write them to `private-links.txt`.
+
 ## Files
 
 | Path | What it does |
